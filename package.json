@@ -1,0 +1,20 @@
+{
+  "name": "klarin_server",
+  "version": "1.0.0",
+  "description": "klarin server",
+  "homepage": "https://github.com/mas-andri/klarin_server#readme",
+  "bugs": {
+    "url": "https://github.com/mas-andri/klarin_server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mas-andri/klarin_server.git"
+  },
+  "license": "ISC",
+  "author": "Margono Andri Hastiko",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
