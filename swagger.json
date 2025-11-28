@@ -1,0 +1,414 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kalrin API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for Authentication and Todo management using Express.js, JWT, and PostgreSQL."
+  },
+  "servers": [{ "url": "http://localhost:3030" }],
+  "paths": {
+    "/user/signup": {
+      "post": {
+        "summary": "Register new user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["fullname", "email", "password"],
+                "properties": {
+                  "fullname": {
+                    "type": "string",
+                    "example": "Sheldon James Plankton"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "plankton@cbucket.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "#ChumBucket321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "userData": {
+                      "type": "object",
+                      "example": {
+                        "id": "87ef85fd-1c75-4e52-b21f-5c3e24aa8e0c",
+                        "fullname": "Sheldon James Plankton",
+                        "email": "plankton@cbucket.com"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": { "error": "email already exist" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/user/login": {
+      "post": {
+        "summary": "Login user and get JWT token",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "plankton@cbucket.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "#ChumBucket321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "id": "87ef85fd-1c75-4e52-b21f-5c3e24aa8e0c",
+                    "email": "plankton@cbucket.com",
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg3ZWY4NWZkLTFjNzUtNGU1Mi1iMjFmLTVjM2UyNGFhOGUwYyIsImVtYWlsIjoicGxhbmt0b25AY2J1Y2tldC5jb20iLCJpYXQiOjE3NjQzNDE1NTMsImV4cCI6MTc2NDQyNzk1M30.Znp14taSo1GTujrdfOgdHivuWEu0kCYb3Jbhrsepbks"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": { "error": "invalid email or password" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/user/{userId}": {
+      "put": {
+        "summary": "Update user data",
+        "tags": ["Auth"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullname": { "type": "string", "example": "Plankton" },
+                  "password": { "type": "string", "example": "#ChumBucket000" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "success",
+                    "userData": {
+                      "id": "2c56b56b-64fa-470f-86cd-aee26696b7e7",
+                      "fullname": "Sheldon James Plankton",
+                      "email": "plankton@cbucket.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Cannot update other user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": { "error": "forbidden action" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["Auth"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "User deleted" },
+          "403": {
+            "description": "Cannot delete other user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": { "error": "forbidden action" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/todo/create": {
+      "post": {
+        "summary": "Create a new todo",
+        "tags": ["Todo"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["todo"],
+                "properties": {
+                  "todo": {
+                    "type": "string",
+                    "example": "Buy groceries"
+                  },
+                  "checked": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Todo created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "success",
+                    "data": {
+                      "id": "a237e132-d178-4c7c-88f0-8fe36181e323",
+                      "user_id": "f74fa780-d210-425d-a55d-86d00ba94cc9",
+                      "todo": "Buy groceries",
+                      "checked": false,
+                      "created_at": "2025-11-28T15:17:57.832Z",
+                      "updated_at": "2025-11-28T15:17:57.832Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/todo": {
+      "get": {
+        "summary": "Get all user's todos",
+        "tags": ["Todo"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of todos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "success",
+                    "data": [
+                      {
+                        "id": "2bcdac07-3a0d-450e-8101-dc1a28b62609",
+                        "user_id": "f74fa780-d210-425d-a55d-86d00ba94cc9",
+                        "todo": "Buy groceries",
+                        "checked": false,
+                        "created_at": "2025-11-28T15:37:26.374Z",
+                        "updated_at": "2025-11-28T15:37:26.374Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/todo/{todoId}": {
+      "put": {
+        "summary": "Update a todo",
+        "tags": ["Todo"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "todoId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "todo": {
+                    "type": "string",
+                    "example": "Buy fruits"
+                  },
+                  "checked": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Todo updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "success",
+                    "data": {
+                      "id": "a237e132-d178-4c7c-88f0-8fe36181e323",
+                      "user_id": "f74fa780-d210-425d-a55d-86d00ba94cc9",
+                      "todo": "Buy Fruits",
+                      "checked": true,
+                      "created_at": "2025-11-28T15:17:57.832Z",
+                      "updated_at": "2025-11-28T15:17:57.832Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Todo not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "todo not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "summary": "Delete todo",
+        "tags": ["Todo"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "todoId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Todo deleted" },
+          "404": {
+            "description": "Todo not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "todo not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

@@ -5,6 +5,13 @@ const User = {
     return await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
   },
 
+  selectUserById: async (id) => {
+    return await db.query(
+      `SELECT id, email, fullname FROM users WHERE id = $1`,
+      [id]
+    );
+  },
+
   create: async (data) => {
     return await db.query(
       `INSERT INTO users (fullname, email, password)
@@ -31,10 +38,10 @@ const User = {
 
     // Require at least 1 field to update
     if (fields.length === 0) {
-      throw new Error("No fields to update");
+      throw new Error("no fields to update");
     }
 
-    values.push(data.id);
+    values.push(data.userId);
 
     const query = `
       UPDATE users
@@ -44,16 +51,6 @@ const User = {
     `;
 
     return db.query(query, values);
-    // if (data.password) {
-    //   return await db.query(
-    //     `UPDATE users SET fullname = $1, password = $2 WHERE email = $3`,
-    //     [data.fullname, data.password, data.email]
-    //   );
-    // }
-    // return await db.query(`UPDATE users SET fullname = $1 WHERE email = $2`, [
-    //   data.fullname,
-    //   data.email,
-    // ]);
   },
 
   delete: async (id) => {

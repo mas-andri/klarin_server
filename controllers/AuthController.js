@@ -34,18 +34,19 @@ const login = async (req, res, next) => {
 
     const existingUser = await Users.selectUserByEmail(email);
     if (existingUser.rows.length < 1)
-      throw new Error("Invalid email or password");
+      throw new Error("invalid email or password");
 
     // compare password
     const user = existingUser.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error("Invalid email or password");
+    if (!isMatch) throw new Error("invalid email or password");
 
     // create token
     const payload = { id: user.id, email: user.email };
     const accessToken = jwt.sign(payload, process.env.SECRET, {
       expiresIn: maxAge,
     });
+
     res.status(200).json({ ...payload, accessToken });
   } catch (err) {
     next(err);
@@ -54,21 +55,15 @@ const login = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    console.log("auth");
-    const { email } = req.user;
+    const { userId } = req.params;
+    // const { email } = req.user;
 
-    if (req.user.id !== id) {
-      return res
-        .status(403)
-        .json({ error: "Forbidden: cannot update other user" });
+    if (req.user.id !== userId) {
+      return res.status(403).json({ error: "forbidden action" });
     }
 
-    const existingUser = await Users.selectUserByEmail(email);
-    if (existingUser.rows.length < 1) throw new Error("User not found");
+    let updateData = { ...req.body, userId };
 
-    // if password is updated
-    let updateData = { ...req.body, id };
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
     }
@@ -90,13 +85,8 @@ const deleteUser = async (req, res, next) => {
     const { id } = req.params;
 
     if (req.user.id !== id) {
-      return res
-        .status(403)
-        .json({ error: "Forbidden: cannot delete other user" });
+      return res.status(403).json({ error: "forbidden action" });
     }
-
-    const existingUser = await Users.selectUserByEmail(req.user.email);
-    if (existingUser.rows.length < 1) throw new Error("User not found");
 
     await Users.delete(id);
     res.status(204).end();
