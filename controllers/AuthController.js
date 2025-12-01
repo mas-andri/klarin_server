@@ -56,7 +56,6 @@ const login = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    // const { email } = req.user;
 
     if (req.user.id !== userId) {
       return res.status(403).json({ error: "forbidden action" });

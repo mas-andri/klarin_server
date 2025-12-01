@@ -1,0 +1,182 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict 4kHlQICv2g4zdGCss11amSRNrsTMGL1VO5TmueY5hyskTsS3tkcKijs82dqPGna
+
+-- Dumped from database version 17.7 (Homebrew)
+-- Dumped by pg_dump version 18.0
+
+-- Started on 2025-12-01 22:17:55 WIB
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2 (class 3079 OID 16437)
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- TOC entry 3863 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+--
+-- TOC entry 230 (class 1255 OID 16486)
+-- Name: update_timestamp(); Type: FUNCTION; Schema: public; Owner: plankton
+--
+
+CREATE FUNCTION public.update_timestamp() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_timestamp() OWNER TO plankton;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 219 (class 1259 OID 16470)
+-- Name: todo_list; Type: TABLE; Schema: public; Owner: plankton
+--
+
+CREATE TABLE public.todo_list (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    todo text NOT NULL,
+    checked boolean DEFAULT false,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.todo_list OWNER TO plankton;
+
+--
+-- TOC entry 218 (class 1259 OID 16458)
+-- Name: users; Type: TABLE; Schema: public; Owner: plankton
+--
+
+CREATE TABLE public.users (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    fullname character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.users OWNER TO plankton;
+
+--
+-- TOC entry 3857 (class 0 OID 16470)
+-- Dependencies: 219
+-- Data for Name: todo_list; Type: TABLE DATA; Schema: public; Owner: plankton
+--
+
+COPY public.todo_list (id, user_id, todo, checked, created_at, updated_at) FROM stdin;
+fe11cf19-2040-434c-8367-4b9c85912cf3	e9d6565b-159d-43a7-9812-c748474a2736	bdkabdkabdakjs	f	2025-11-30 22:54:45.253841+07	2025-11-30 22:54:45.253841+07
+19982237-3120-405f-af19-3e8ad6b2e13c	aea4b8fa-2bd3-4785-96c3-78923b516a0f	Buy groceries	f	2025-12-01 22:07:38.610317+07	2025-12-01 22:07:38.610317+07
+cbbdd767-8200-44cb-9052-332784c01ac8	aea4b8fa-2bd3-4785-96c3-78923b516a0f	Buy groceries	f	2025-11-29 22:02:40.830546+07	2025-11-29 22:02:40.830546+07
+2a4bfa29-6410-4a3d-9c08-1b3a3d43f569	e9d6565b-159d-43a7-9812-c748474a2736	Buy Fruits	f	2025-11-30 22:46:59.098266+07	2025-11-30 22:49:00.719991+07
+\.
+
+
+--
+-- TOC entry 3856 (class 0 OID 16458)
+-- Dependencies: 218
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: plankton
+--
+
+COPY public.users (id, fullname, email, password, created_at, updated_at) FROM stdin;
+aea4b8fa-2bd3-4785-96c3-78923b516a0f	Sheldon James Plankton	plankton@cbucket.com	$2b$10$.yPUCuNskucurqH37A9m0eqITF/0xDvlHYAPytNQ8fhOvynN.fbDO	2025-11-29 21:34:01.178718+07	2025-11-29 21:34:01.178718+07
+ca75f792-74f2-4b11-8418-665f22d9fbb6	Patrick	patrick@mail.com	$2b$10$apw.aDfpQ1mX8jsRoGItKuOxhY7m9zzcE3KsxolKoI8B7XHO2Gfhe	2025-11-29 21:59:50.477657+07	2025-11-29 21:59:50.477657+07
+e9d6565b-159d-43a7-9812-c748474a2736	Admin	admin@mail.com	$2b$10$L0m5hBj3Ek/FBF2SBkRFfuNouL1maAgfSsXuXPDjgvaWfKxuo9cPW	2025-11-30 20:38:45.366229+07	2025-11-30 20:38:45.366229+07
+\.
+
+
+--
+-- TOC entry 3707 (class 2606 OID 16480)
+-- Name: todo_list todo_list_pkey; Type: CONSTRAINT; Schema: public; Owner: plankton
+--
+
+ALTER TABLE ONLY public.todo_list
+    ADD CONSTRAINT todo_list_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3703 (class 2606 OID 16469)
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: plankton
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- TOC entry 3705 (class 2606 OID 16467)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: plankton
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3710 (class 2620 OID 16488)
+-- Name: todo_list update_todo_list_timestamp; Type: TRIGGER; Schema: public; Owner: plankton
+--
+
+CREATE TRIGGER update_todo_list_timestamp BEFORE UPDATE ON public.todo_list FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
+
+
+--
+-- TOC entry 3709 (class 2620 OID 16487)
+-- Name: users update_users_timestamp; Type: TRIGGER; Schema: public; Owner: plankton
+--
+
+CREATE TRIGGER update_users_timestamp BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
+
+
+--
+-- TOC entry 3708 (class 2606 OID 16481)
+-- Name: todo_list todo_list_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: plankton
+--
+
+ALTER TABLE ONLY public.todo_list
+    ADD CONSTRAINT todo_list_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+-- Completed on 2025-12-01 22:17:55 WIB
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict 4kHlQICv2g4zdGCss11amSRNrsTMGL1VO5TmueY5hyskTsS3tkcKijs82dqPGna
+

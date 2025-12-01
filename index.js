@@ -6,11 +6,13 @@ const logger = require("morgan");
 const passport = require("./lib/passport");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJSON = require("./swagger.json");
+const cors = require("cors");
 
 const AuthRoute = require("./routes/AuthRoute");
 const TodoRoute = require("./routes/TodoRoute");
 
 // Middlewares
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
