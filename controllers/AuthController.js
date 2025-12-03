@@ -42,7 +42,7 @@ const login = async (req, res, next) => {
     if (!isMatch) throw new Error("invalid email or password");
 
     // create token
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email, fullname: user.fullname };
     const accessToken = jwt.sign(payload, process.env.SECRET, {
       expiresIn: maxAge,
     });
